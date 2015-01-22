@@ -1,3 +1,6 @@
+
+![Cozy Logo](https://raw.github.com/cozy/cozy-setup/gh-pages/assets/images/happycloud.png)
+
 # Cozy-sinopia
 
 It starts a sinopia instance, a private npm server, 
