@@ -2,7 +2,7 @@ var cozyHandler = require('./cozy');
 
 console.log('sinopia made cozy..');
 var options = {
-  port:8080,
+  port: 8080,
   getPort: function(){
     return 8081;
   }

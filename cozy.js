@@ -25,8 +25,10 @@ var cozyHandler = {
       var sinopiaPort = options.getPort();
       var sinopiaAddr = 'http://' + hostname + ':' + sinopiaPort + '/';
 
-      var sinopiaBin = pathExtra.join(__dirname, 'node_modules', '.bin', 'sinopia')
-      cozyHandler.sinopia = spawn(sinopiaBin, ['-l', hostname + ':' + sinopiaPort ]);
+      var sinopiaBin = pathExtra.join(
+        __dirname, 'node_modules', '.bin', 'sinopia');
+      cozyHandler.sinopia = spawn(sinopiaBin,
+        ['-l', hostname + ':' + sinopiaPort ]);
       cozyHandler.sinopia.stdout.on('data', function (data) {
         console.log('stdout: ' + data);
       });
@@ -39,26 +41,27 @@ var cozyHandler = {
       var app = express();
 
       //npm set registry http://localhost:4873/
-      app.use(express.static( pathExtra.join(__dirname, '/public') ) );
+      app.use(express.static(pathExtra.join(__dirname, '/public') ) );
       app.get('/status', function(req, res){
         var registry = npm.config.get('registry');
-        res.send({enabled: (registry == sinopiaAddr) });
+        res.send({enabled: (registry === sinopiaAddr) });
       });
       app.get('/enable', function(req, res){
-        npm.commands.config(['set','registry', sinopiaAddr], function(){
+        npm.commands.config(['set', 'registry', sinopiaAddr], function(){
           res.send({enabled: true });
         });
       });
       app.get('/disable', function(req, res){
-        npm.commands.config(['set','registry', cozyHandler.originalRegistry], function(){
-          res.send({enabled: false });
-        });
+        npm.commands.config(['set', 'registry', cozyHandler.originalRegistry],
+          function(){
+            res.send({enabled: false });
+          });
       });
 
       cozyHandler.server = http.createServer(app);
-      cozyHandler.server.listen( options.port, hostname );
+      cozyHandler.server.listen(options.port, hostname);
 
-      npm.commands.config(['set','registry', sinopiaAddr], function(){
+      npm.commands.config(['set', 'registry', sinopiaAddr], function(){
         done(null, app, cozyHandler.server);
       });
     });
@@ -67,13 +70,14 @@ var cozyHandler = {
   stop: function(done) {
     cozyHandler.server.close();
     npm.load(npmOptions, function () {
-      npm.commands.config(['set','registry', cozyHandler.originalRegistry], function(){
-        cozyHandler.sinopia.once('close', function(){
-          cozyHandler.sinopia  = null;
-          done();
+      npm.commands.config(['set', 'registry', cozyHandler.originalRegistry],
+        function(){
+          cozyHandler.sinopia.once('close', function(){
+            cozyHandler.sinopia = null;
+            done();
+          });
+          cozyHandler.sinopia.kill();
         });
-        cozyHandler.sinopia.kill();
-      });
     });
   }
 };
