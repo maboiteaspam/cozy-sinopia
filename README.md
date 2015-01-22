@@ -8,7 +8,7 @@ At end it will reset the original registry.
 
 So, no worry !
 
-In case it breaks your registry config, rest it with
+In case it breaks your registry config, reset it with
 
 ```
 npm config set registry https://registry.npmjs.org/
