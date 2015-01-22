@@ -13,5 +13,6 @@
     "npm": "^2.2.0",
     "path-extra": "^0.3.0",
     "sinopia": "^1.0.0-beta.2"
-  }
+  },
+  "displayName" : "Sinopia"
 }
