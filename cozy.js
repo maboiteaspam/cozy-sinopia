@@ -5,26 +5,28 @@ var pathExtra = require('path-extra');
 var express = require('express');
 var http = require('http');
 var spawn = require('child_process').spawn;
-var exec = require('child_process').exec;
+
+var npmOptions = {
+  userconfig: pathExtra.join(pathExtra.homedir(), '.npmrc'),
+  silent: true
+};
 
 var cozyHandler = {
+  originalRegistry: null,
   server: null,
   sinopia: null,
   start: function(options, done) {
 
-    var npmOptions = {
-      userconfig: pathExtra.join(pathExtra.homedir(), '.npmrc'),
-      silent: true
-    };
     npm.load(npmOptions, function () {
+      cozyHandler.originalRegistry = npm.config.get('registry');
 
-      var originalRegistry = 'https://registry.npmjs.org/';
       var hostname = options.hostname || '127.0.0.1';
 
       var sinopiaPort = options.getPort();
       var sinopiaAddr = 'http://' + hostname + ':' + sinopiaPort + '/';
 
-      cozyHandler.sinopia = spawn('sinopia', ['-l', hostname + ':' + sinopiaPort ]);
+      var sinopiaBin = pathExtra.join(__dirname, 'node_modules', '.bin', 'sinopia')
+      cozyHandler.sinopia = spawn(sinopiaBin, ['-l', hostname + ':' + sinopiaPort ]);
       cozyHandler.sinopia.stdout.on('data', function (data) {
         console.log('stdout: ' + data);
       });
@@ -48,7 +50,7 @@ var cozyHandler = {
         });
       });
       app.get('/disable', function(req, res){
-        npm.commands.config(['set','registry', originalRegistry], function(){
+        npm.commands.config(['set','registry', cozyHandler.originalRegistry], function(){
           res.send({enabled: false });
         });
       });
@@ -56,17 +58,23 @@ var cozyHandler = {
       cozyHandler.server = http.createServer(app);
       cozyHandler.server.listen( options.port, hostname );
 
-      done(null, app, cozyHandler.server);
+      npm.commands.config(['set','registry', sinopiaAddr], function(){
+        done(null, app, cozyHandler.server);
+      });
     });
 
   },
   stop: function(done) {
-    cozyHandler.sinopia.once('close', function(){
-      cozyHandler.server.close();
-      cozyHandler.sinopia  = null;
-      done();
+    cozyHandler.server.close();
+    npm.load(npmOptions, function () {
+      npm.commands.config(['set','registry', cozyHandler.originalRegistry], function(){
+        cozyHandler.sinopia.once('close', function(){
+          cozyHandler.sinopia  = null;
+          done();
+        });
+        cozyHandler.sinopia.kill();
+      });
     });
-    cozyHandler.sinopia.kill();
   }
 };
 
