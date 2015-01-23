@@ -1,32 +1,11 @@
+var cozyStub = require('cozy-stub');
+
 var cozyHandler = require('./cozy');
 
 console.log('sinopia made cozy..');
 var options = {
   showLog: true,
-  port: 8080,
-  getPort: function(){
-    return 8081;
-  }
+  port: 8090
 };
-cozyHandler.start(options, function(err,app,server){
-  console.log('http://localhost:8080/');
-  console.log('ready!');
 
-
-  var done = function(){
-    process.exit();
-  };
-
-  process.on('uncaughtException', function(err){
-    if (err) {
-      console.error(err.stack);
-    }
-    server.close();
-    cozyHandler.stop(done);
-  });
-
-  process.on('SIGINT', function(){
-    server.close();
-    cozyHandler.stop(done);
-  });
-});
+cozyStub.stub(cozyHandler, options);
