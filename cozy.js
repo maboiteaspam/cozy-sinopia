@@ -29,7 +29,7 @@ var cozyHandler = {
         __dirname, 'node_modules', '.bin', 'sinopia');
       cozyHandler.sinopia = spawn(sinopiaBin,
         ['-l', hostname + ':' + sinopiaPort ],
-        { stdio: showLog ? 'inherit':'ignore' });
+        { stdio: showLog ? 'inherit' : 'ignore' });
 
       var app = express();
 
