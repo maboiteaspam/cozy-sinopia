@@ -28,7 +28,7 @@ npm config set registry https://registry.npmjs.org/
 
 # Browse
 
-```http://localhost:8090/```
+    http://localhost:8090/
 
 # Cozy
 
