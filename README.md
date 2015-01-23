@@ -18,6 +18,14 @@ In case it breaks your registry config, reset it with
 npm config set registry https://registry.npmjs.org/
 ```
 
+# Install
+
+```npm i cozy-sinopia -g```
+
+# Cozy Install
+
+```cozy-light install cozy-sinopia```
+
 # Cozy
 
 It s cozy because it s cozy-light compatible. Find out more at https://github.com/cozy-labs/cozy-light.
