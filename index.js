@@ -21,12 +21,12 @@ cozyHandler.start(options, function(err,app,server){
     if (err) {
       console.error(err.stack);
     }
-    cozyHandler.server.close();
+    server.close();
     cozyHandler.stop(done);
   });
 
   process.on('SIGINT', function(){
-    cozyHandler.server.close();
+    server.close();
     cozyHandler.stop(done);
   });
 });

@@ -13,7 +13,6 @@ var npmOptions = {
 
 var cozyHandler = {
   originalRegistry: null,
-  server: null,
   sinopia: null,
   start: function(options, done) {
 
@@ -52,11 +51,11 @@ var cozyHandler = {
           });
       });
 
-      cozyHandler.server = http.createServer(app);
-      cozyHandler.server.listen(options.port, hostname);
+      var server = http.createServer(app);
+      server.listen(options.port, hostname);
 
       npm.commands.config(['set', 'registry', sinopiaAddr], function(){
-        done(null, app, cozyHandler.server);
+        done(null, app, server);
       });
     });
 
