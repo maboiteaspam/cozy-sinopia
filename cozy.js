@@ -20,6 +20,7 @@ var cozyHandler = {
     npm.load(npmOptions, function () {
       cozyHandler.originalRegistry = npm.config.get('registry');
 
+      var showLog = !!options.showLog;
       var hostname = options.hostname || '127.0.0.1';
 
       var sinopiaPort = options.getPort();
@@ -28,15 +29,8 @@ var cozyHandler = {
       var sinopiaBin = pathExtra.join(
         __dirname, 'node_modules', '.bin', 'sinopia');
       cozyHandler.sinopia = spawn(sinopiaBin,
-        ['-l', hostname + ':' + sinopiaPort ]);
-      cozyHandler.sinopia.stdout.on('data', function (data) {
-        console.log('stdout: ' + data);
-      });
-
-      cozyHandler.sinopia.stderr.on('data', function (data) {
-        console.log('stderr: ' + data);
-      });
-      cozyHandler.sinopia.stdin.end();
+        ['-l', hostname + ':' + sinopiaPort ],
+        { stdio: showLog ? 'inherit':'ignore' });
 
       var app = express();
 
@@ -68,15 +62,14 @@ var cozyHandler = {
 
   },
   stop: function(done) {
-    cozyHandler.server.close();
+    cozyHandler.sinopia.once('close', function(){
+      cozyHandler.sinopia = null;
+    });
+    cozyHandler.sinopia.kill();
     npm.load(npmOptions, function () {
       npm.commands.config(['set', 'registry', cozyHandler.originalRegistry],
         function(){
-          cozyHandler.sinopia.once('close', function(){
-            cozyHandler.sinopia = null;
-            done();
-          });
-          cozyHandler.sinopia.kill();
+          done();
         });
     });
   }
