@@ -19,7 +19,7 @@ cozyHandler.start(options, function(err,app,server){
 
   process.on('uncaughtException', function(err){
     if (err) {
-      console.error(err);
+      console.error(err.stack);
     }
     cozyHandler.server.close();
     cozyHandler.stop(done);
