@@ -26,6 +26,10 @@ npm config set registry https://registry.npmjs.org/
 
 ```cozy-light install cozy-sinopia```
 
+# Browse
+
+```http://localhost:8090/```
+
 # Cozy
 
 It s cozy because it s cozy-light compatible. Find out more at https://github.com/cozy-labs/cozy-light.
