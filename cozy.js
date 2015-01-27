@@ -25,12 +25,6 @@ var cozyHandler = {
       var sinopiaPort = options.getPort();
       var sinopiaAddr = 'http://' + hostname + ':' + sinopiaPort + '/';
 
-      var sinopiaBin = pathExtra.join(
-        __dirname, 'node_modules', '.bin', 'sinopia');
-      cozyHandler.sinopia = spawn(sinopiaBin,
-        ['-l', hostname + ':' + sinopiaPort ],
-        { stdio: showLog ? 'inherit' : 'ignore' });
-
       var app = express();
 
       //npm set registry http://localhost:4873/
@@ -55,22 +49,34 @@ var cozyHandler = {
       server.listen(options.port, hostname);
 
       npm.commands.config(['set', 'registry', sinopiaAddr], function(){
+
+        var sinopiaBin = pathExtra.join(
+          __dirname, 'node_modules', '.bin', 'sinopia');
+
+        cozyHandler.sinopia = spawn(sinopiaBin,
+          ['-l', hostname + ':' + sinopiaPort ],
+          { stdio: showLog ? 'inherit' : 'ignore' });
+
+        cozyHandler.sinopia.once('close', function(){
+          npm.load(npmOptions, function () {
+            npm.commands.config(['set', 'registry', cozyHandler.originalRegistry]);
+            cozyHandler.sinopia  = null;
+          });
+        });
+
         done(null, app, server);
       });
     });
 
   },
   stop: function(done) {
-    cozyHandler.sinopia.once('close', function(){
-      cozyHandler.sinopia = null;
-    });
     cozyHandler.sinopia.kill();
-    npm.load(npmOptions, function () {
-      npm.commands.config(['set', 'registry', cozyHandler.originalRegistry],
-        function(){
-          done();
-        });
-    });
+    var invl = setInterval(function(){
+      if ( cozyHandler.sinopia === null ) {
+        clearInterval(invl);
+        done();
+      }
+    }, 50);
   }
 };
 
