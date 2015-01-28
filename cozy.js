@@ -58,10 +58,8 @@ var cozyHandler = {
           { stdio: showLog ? 'inherit' : 'ignore' });
 
         cozyHandler.sinopia.once('close', function(){
-          npm.load(npmOptions, function () {
             npm.commands.config(['set', 'registry', cozyHandler.originalRegistry]);
             cozyHandler.sinopia  = null;
-          });
         });
 
         done(null, app, server);
@@ -70,7 +68,9 @@ var cozyHandler = {
 
   },
   stop: function(done) {
-    cozyHandler.sinopia.kill();
+    if (cozyHandler.sinopia !== null) {
+      cozyHandler.sinopia.kill();
+    }
     var invl = setInterval(function(){
       if ( cozyHandler.sinopia === null ) {
         clearInterval(invl);
