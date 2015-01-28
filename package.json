@@ -1,6 +1,6 @@
 {
   "name": "cozy-sinopia",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "sinopia made cozy",
   "main": "index.js",
   "bin": {
