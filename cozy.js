@@ -36,7 +36,7 @@ var cozyHandler = {
           originalRegistry: cozyHandler.originalRegistry,
           sinopiaRegisrty:sinopiaAddr
         };
-      }
+      };
 
       //npm set registry http://localhost:4873/
       app.use(express.static(pathExtra.join(__dirname, '/public') ) );
