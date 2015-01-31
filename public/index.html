@@ -44,21 +44,21 @@
 
         var originalRegistry;
         $.get('original_registry', function(d){
-            originalRegistry = d;
-            console.log(d);
+            originalRegistry = d.original_registry;
             $('input[name="originalRegistry"]').val(originalRegistry);
         });
-        $('input[name="originalRegistry"]').on('keydown' , function(){
+        $('input[name="originalRegistry"]').on('keyup' , function(){
             if( $(this).val() !== originalRegistry ){
-                $('input[name="change"]').css('visibility','visible');
+                $('button[name="change"]').css('visibility','visible');
             } else {
-                $('input[name="change"]').css('visibility','hidden');
+                $('button[name="change"]').css('visibility','hidden');
             }
         });
-        $('input[name="change"]').on('click', function(){
-            var v = $(this).val();
+        $('button[name="change"]').on('click', function(){
+            var v = $('input[name="originalRegistry"]').val();
             $.post('original_registry',{registry:v}, function(d){
                 originalRegistry = d;
+                $('button[name="change"]').css('visibility','hidden');
             });
         });
     })();
