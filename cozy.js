@@ -28,33 +28,35 @@ var cozyHandler = {
 
       var app = express();
 
+      var getStatus = function(){
+        var registry = npm.config.get('registry');
+        return {
+          enabled: (registry === sinopiaAddr),
+          isRunning: cozyHandler.sinopia!==null,
+          originalRegistry: cozyHandler.originalRegistry,
+          sinopiaRegisrty:sinopiaAddr
+        };
+      }
+
       //npm set registry http://localhost:4873/
       app.use(express.static(pathExtra.join(__dirname, '/public') ) );
       app.use(bodyParser.urlencoded({ extended: false }));
       app.get('/status', function(req, res){
-        var registry = npm.config.get('registry');
-        res.send({
-          enabled: (registry === sinopiaAddr),
-          isRunning: cozyHandler.sinopia!==null
-        });
-      });
-      app.get('/original_registry', function(req, res){
-        var registry = npm.config.get('registry');
-        res.send({original_registry: cozyHandler.originalRegistry });
+        res.send(getStatus());
       });
       app.post('/original_registry', function(req, res){
         cozyHandler.originalRegistry = req.body.registry;
-        res.send({original_registry: cozyHandler.originalRegistry });
+        res.send(getStatus());
       });
       app.get('/enable', function(req, res){
         npm.commands.config(['set', 'registry', sinopiaAddr], function(){
-          res.send({enabled: true });
+          res.send(getStatus());
         });
       });
       app.get('/disable', function(req, res){
         npm.commands.config(['set', 'registry', cozyHandler.originalRegistry],
           function(){
-            res.send({enabled: false });
+            res.send(getStatus());
           });
       });
 

@@ -6,47 +6,22 @@
 </head>
 <body>
     <h1>Sinopia status</h1>
-    <br/>
+    <br/><br/>
+    <b>Current NPM registry</b> : <span class="currentRegistry"></span>
+    <br/><br/>
     <a href="#" class="enable">Click here to <span class="status"></span></a>
-    <br/>
+    <br/><br/>
     <b>Original registry</b>
     <input type="text" name="originalRegistry" />
     <button name="change" style="visibility: hidden">Change</button>
+    <br/><br/>
+    <b>Default NPM registry</b> : https://registry.npmjs.org/
 
 <script src="jquery-2.1.3.min.js"></script>
 <script>
     (function(){
-        var updateStatus = function(enabled){
-            if (enabled) {
-                $('.status').html('disable')
-            } else {
-                $('.status').html('enable')
-            }
-        };
-        $.get('status', function(d){
-            updateStatus(d.enabled);
-        });
-        var working = false;
-        $('.enable').on('click', function(){
-            working = true;
-            var enabled = $('.status').html() == 'disable';
-            if (enabled) {
-                $.get('disable', function(d){
-                    updateStatus(d.enabled);
-                });
-            } else {
-                $.get('enable', function(d){
-                    updateStatus(d.enabled);
-                });
-            }
-            return false;
-        });
 
         var originalRegistry;
-        $.get('original_registry', function(d){
-            originalRegistry = d.original_registry;
-            $('input[name="originalRegistry"]').val(originalRegistry);
-        });
         $('input[name="originalRegistry"]').on('keyup' , function(){
             if( $(this).val() !== originalRegistry ){
                 $('button[name="change"]').css('visibility','visible');
@@ -61,6 +36,32 @@
                 $('button[name="change"]').css('visibility','hidden');
             });
         });
+
+        var updateStatus = function(status){
+            if (status.enabled) {
+                $('.status').html('disable');
+                $('.currentRegistry').html(status.sinopiaRegisrty);
+            } else {
+                $('.status').html('enable');
+                $('.currentRegistry').html(status.originalRegistry);
+            }
+            originalRegistry = status.originalRegistry;
+            $('input[name="originalRegistry"]').val(status.originalRegistry);
+        };
+        var working = false;
+        $('.enable').on('click', function(){
+            working = true;
+            var enabled = $('.status').html() == 'disable';
+            if (enabled) {
+                $.get('disable', updateStatus);
+            } else {
+                $.get('enable', updateStatus);
+            }
+            return false;
+        });
+
+
+        $.get('status', updateStatus);
     })();
 </script>
 </body>
