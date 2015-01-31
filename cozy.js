@@ -73,8 +73,10 @@ var cozyHandler = {
           { stdio: showLog ? 'inherit' : 'ignore' });
 
         cozyHandler.sinopia.once('close', function(){
-            npm.commands.config(['set', 'registry', cozyHandler.originalRegistry]);
-            cozyHandler.sinopia  = null;
+            npm.commands.config(['set', 'registry', cozyHandler.originalRegistry],
+              function(){
+                cozyHandler.sinopia  = null;
+              });
         });
 
         done(null, app, server);
