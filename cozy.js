@@ -5,6 +5,7 @@ var pathExtra = require('path-extra');
 var express = require('express');
 var http = require('http');
 var spawn = require('child_process').spawn;
+var bodyParser = require('body-parser');
 
 var npmOptions = {
   userconfig: pathExtra.join(pathExtra.homedir(), '.npmrc'),
@@ -29,9 +30,21 @@ var cozyHandler = {
 
       //npm set registry http://localhost:4873/
       app.use(express.static(pathExtra.join(__dirname, '/public') ) );
+      app.use(bodyParser.urlencoded({ extended: false }));
       app.get('/status', function(req, res){
         var registry = npm.config.get('registry');
-        res.send({enabled: (registry === sinopiaAddr) });
+        res.send({
+          enabled: (registry === sinopiaAddr),
+          isRunning: cozyHandler.sinopia!==null
+        });
+      });
+      app.get('/original_registry', function(req, res){
+        var registry = npm.config.get('registry');
+        res.send({original_registry: cozyHandler.originalRegistry });
+      });
+      app.post('/original_registry', function(req, res){
+        cozyHandler.originalRegistry = req.body.registry;
+        res.send({original_registry: cozyHandler.originalRegistry });
       });
       app.get('/enable', function(req, res){
         npm.commands.config(['set', 'registry', sinopiaAddr], function(){

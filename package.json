@@ -4,7 +4,7 @@
   "description": "sinopia made cozy",
   "main": "index.js",
   "bin": {
-    "cozy-sinopia":"index.js"
+    "cozy-sinopia": "index.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -13,6 +13,7 @@
   "author": "maboiteaspam",
   "license": "WTFPL",
   "dependencies": {
+    "body-parser": "^1.11.0",
     "cozy-stub": "^1.0.0",
     "express": "^4.11.1",
     "npm": "^2.2.0",
